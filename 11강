@@ -1,0 +1,139 @@
+1. 사용자가 입력한 텍스트 파일을 열어서 파일 안에 글자가 몇 개나 있는지를 계산하는 프로그램을 작성하라.
+from google.colab import files # 내 컴퓨터의 파일을 코랩에 업로드해서
+uploaded = files.upload() # 처리 하는 부분입니다.
+filename = input("파일 이름을 입력하세요: ").strip()
+infile = open(filename, "r")
+count = 0
+for line in infile:
+ for ch in line:
+ count += 1
+print("파일 안에는 총 ", count , "개의 글자가 있습니다.")
+infile.close() # 파일을 닫는다.
+
+2. 사용자로부터 파일 이름과 삭제할 문자열을 입력받는다. 파일을 열어서 사용자가 원하는 문자열을 삭제한 후에 다시 파일에 쓴다.
+infilename = input("파일 이름을 입력하시오: ").strip()
+infile = open(infilename, "r")
+file_s = infile.read()
+removed_s = input("삭제할 문자열을 입력하시오: ").strip()
+modified_s = file_s.replace(removed_s, "")
+infile.close()
+outfile = open(infilename, "w")
+print(modified_s, file = outfile, end = "")
+print("변경된 파일이 저장되었습니다.")
+outfile.close()
+
+3. 사용자가 입력하는 파일에 있는 각 문자들이 나타내는 빈도를 계산하는 프로그램을 작성하라.
+infile = open(filename, "r")
+for line in infile:
+...
+def countLine(line, counter):
+ for ch in line:
+ if ch.isalpha():
+ if ch in counter:
+ counter[ch] = counter[ch] + 1
+ else:
+ counter[ch] = 1
+fname = input("입력 파일 이름: ").strip()
+infile = open(fname, "r")
+my_dict = { }
+for line in infile:
+ countLine(line, my_dict)
+print(my_dict)
+infile.close()
+
+4. 파이썬에서는 객체를 파일에 저장할 수 있다. pickle모듈을 사용하여서 정수12, 실수 3.14, 리스트[1, 2, 3, 4, 5]를 이전 파일 "test.dat"에 저장 하였다가 다시 읽는 프로그램을 작성하고 테스트하라.
+import pickle
+outfile = open("test.dat", "wb")
+pickle.dump(12, outfile)
+pickle.dump(3.14, outfile)
+pickle.dump([1, 2, 3, 4, 5], outfile)
+outfile.close()
+infile = open("test.dat", "rb")
+print(pickle.load(infile))
+print(pickle.load(infile))
+print(pickle.load(infile))
+infile.close() 
+
+5. 텍스트 파일"data.txt"에 실수값들이 저장되어 있다고 가정하자. 한 줄에 하나의 실수만 저장되어 있다. 예를 들면 다음 과 같다.....
+
+inFileName = input("입력 파일 이름: ")
+outFileName = input("출력 파일 이름: ")
+infile = open(inFileName, "r")
+outfile = open(outFileName, "w")
+total = 0.0
+count = 0
+line = infile.readline()
+while line != "" :
+ value = float(line)
+ total = total + value
+ count = count + 1
+ line = infile.readline()
+outfile.write("합계="+ str(total)+"\n")
+avg = total / count
+outfile.write("평균="+ str(avg)+"\n")
+infile.close()
+outfile.close()
+
+6. 
+import pickle
+from tkinter import *
+phone_book = { }
+current = 0
+name = ""
+phone = ""
+window = Tk()
+frame1 = Frame(window)
+frame1.pack()
+Label(frame1, text = "이름 ").grid(row = 1, column = 1, sticky = W)
+nameEntry = Entry(frame1, textvariable = name, width = 30)
+nameEntry.grid(row = 1, column = 2)
+frame2 = Frame(window)
+frame2.pack()
+Label(frame2, text = "전화번호").grid(row = 1, column = 1, sticky = W)
+phoneEntry = Entry(frame2, textvariable = phone, width = 30)
+phoneEntry.grid(row = 1, column = 2)
+frame3 = Frame(window)
+frame3.pack()
+def save():
+ outfile = open("phonebook.dat", "wb")
+ pickle.dump(phone_book, outfile)
+ print("주소들이 파일에 저장되었습니다")
+ outfile.close()
+def load():
+infile = open("phonebook.dat", "rb")
+ phone_book = pickle.load(infile)
+ infile.close()
+ print("파일에서 주소를 읽었습니다.")
+ go_first()
+def add():
+ phone_book[nameEntry.get()] = phoneEntry.get()
+ print(phone_book)
+ save()
+def go_first():
+ global current
+ current = 0
+ ks = list(phone_book)
+ print(phone_book)
+ nameEntry.delete(0, END)
+ nameEntry.insert(0, ks[current])
+ phoneEntry.delete(0, END)
+ phoneEntry.insert(0, phone_book[ks[current]])
+def go_next():
+ global current
+ current += 1
+ ks = list(phone_book)
+ nameEntry.delete(0, END)
+ nameEntry.insert(0, ks[current])
+ phoneEntry.delete(0, END)
+ phoneEntry.insert(0, phone_book[ks[current]])
+def go_previous():
+ print("구현되지 않았음")
+def go_last():
+ print("구현되지 않았음")
+b1 = Button(frame3, text = "추가", command = add).grid(row = 1, column = 1)
+b2 = Button(frame3, text = "처음", command = go_first).grid(row = 1, column = 2)
+b3 = Button(frame3, text = "다음", command = go_next).grid(row = 1, column = 3)
+b4 = Button(frame3, text = "이전", command =go_previous).grid(row = 1, column = 4)
+b5 = Button(frame3, text = "마지막", command = go_last).grid(row = 1, column = 5)
+b6 = Button(frame3, text = "파일 읽기", command = load).grid(row = 1, column = 6)
+window.mainloop()
